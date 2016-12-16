@@ -1,0 +1,30 @@
+{
+  "name": "src",
+  "version": "0.0.0",
+  "description": "Social Channels Scraping and Analysis",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "elva.org",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "4.4.14",
+    "cron": "1.1.0",
+    "bluebird": "3.4.0",
+    "limiter": "1.0.5",
+    "bottleneck": "1.12.0",
+    "sentiment": "2.0.0",
+    "languagedetect": "1.1.1",
+    "array-unique": "0.3.2",
+    "mongodb-queue": "2.1.0",
+    "mongodb": "",
+    "jquery": "~2",
+    "sentiment-custom-lists": "1.0.9",
+    "natural": "0.4.0",
+    "fuzzysearch-js": "0.2.0",
+    "text-miner":"",
+    "stopword":"",
+    "xregexp":""
+  }
+}
