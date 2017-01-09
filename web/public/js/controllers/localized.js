@@ -1,7 +1,7 @@
 angular.module('WhatPeopleSay.LocalizedControllers', [])
     // inject the Chart service factory into our controller
-    .controller('localizedController', ['$scope', '$rootScope', 'Localized', 'NgMap',
-        function($scope, $rootScope, Localized, NgMap) {
+    .controller('localizedController', ['$scope', '$rootScope', '$interval', 'Localized', 'NgMap', 'Topics',
+        function($scope, $rootScope, $interval, Localized, NgMap, Topics) {
                 NgMap.getMap().then(function(map) {
             var options = {
                 legend: 'none',
@@ -38,9 +38,12 @@ angular.module('WhatPeopleSay.LocalizedControllers', [])
                     
                     Localized.get(encodeURIComponent(topic_name))
                         .success(function(localizedStats) {
-                            console.log(localizedStats);
 
-                            if(!localizedStats) {
+                            console.log("asdad", localizedStats);
+
+                            if(!localizedStats || !localizedStats.data.length) {
+                                var latLng = new google.maps.LatLng( 49.04548, 32.10399 );
+                                map.setCenter(latLng);
                                 return;
                             }
                             console.log(localizedStats);
@@ -123,7 +126,20 @@ angular.module('WhatPeopleSay.LocalizedControllers', [])
                 $scope.loadLocalized(args);
             });
 
-             $scope.loadLocalized('#Donbas');
+            Topics.get()
+                .success(function(data) {
+                            if(!data.length) {
+                                return;
+                            }
+                            
+                        $scope.loadLocalized(data[0].name);
+                });
+                
+            $scope.intervalPromise = $interval(function(){
+                console.log("localized data", $rootScope.activeTopicName);
+                $scope.loadLocalized($rootScope.activeTopicName);
+            }, 60000);
+
            });
         }
     ]);

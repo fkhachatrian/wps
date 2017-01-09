@@ -1,8 +1,8 @@
 angular.module('WhatPeopleSay.TrendsControllers', [])
 
 	// inject the Trends service factory into our controller
-	.controller('trendsController', ['$scope','$http', '$interval', 'Trends', 
-	 function($scope, $http, $interval, Trends) {
+	.controller('trendsController', ['$scope', '$rootScope', '$http', '$interval', 'Trends', 
+	 function($scope, $rootScope, $http, $interval, Trends) {
 		$scope.loading = true;
 		
 		// GET =====================================================================
@@ -25,4 +25,7 @@ angular.module('WhatPeopleSay.TrendsControllers', [])
 		// initial load of data
 		$scope.refreshTrends();
 		
+                $scope.createTopic = function(topic_name) {
+                    $rootScope.$emit('createTopic', [topic_name]);
+                };
 	}]);

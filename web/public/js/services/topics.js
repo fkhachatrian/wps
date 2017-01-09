@@ -11,7 +11,7 @@ angular.module('topicService', [])
 				return $http.post('/api/topics', topicData);
 			},
 			delete : function(id) {
-				return $http.delete('/api/todos/' + id);
+				return $http.delete('/api/topics/' + id);
 			}
 		}
 	}]);

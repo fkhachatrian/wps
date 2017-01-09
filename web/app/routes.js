@@ -5,6 +5,8 @@ var Tweet = require('./models/tweet');
 var Record = require('./models/record');
 var Keyword = require('./models/keyword');
 
+var request = require('request');
+
 var RandomColor = require('randomcolor');
 
 function getLatestTrends(res) {
@@ -159,7 +161,7 @@ module.exports = function (app) {
                     total_neutral: "$total_neutral"
                 }}
             ],
-            function(err,result) { console.log(result);
+            function(err,result) {
                data.data = result;
                res.json(data);
             } 
@@ -251,32 +253,50 @@ module.exports = function (app) {
     app.post('/api/topics', function (req, res) {
 
         var color = RandomColor({count: 1});
-        console.log(color);
-        // create a todo, information comes from AJAX request from Angular
+        
+        var topicName = req.body.name[0];
+
         Topic.create({
-            name: req.body.name,
-            last_scraped: new Date(),
+            name: topicName,
+            last_scraped: null,
             color: color[0]
         }, function (err, todo) {
             if (err) {
                 res.send(err);
             }
+            
+            try {
+                var re = request.post({
+                    'url': 'http://localhost:3000/api/topics',
+                    'body': {
+                        'name': topicName
+                    },
+                    'json': true
+                }, function(err){
+                    console.log(err);
+                });
+            } catch(err) {
+                console.log(err);
+                re.abort();
+                return;
+            }
 
             // get and return all the topics after you create another
             getTopics(res);
+
         });
 
     });
 
     // delete a todo
-    app.delete('/api/todos/:todo_id', function (req, res) {
-        Todo.remove({
-            _id: req.params.todo_id
-        }, function (err, todo) {
+    app.delete('/api/topics/:topic_name', function (req, res) {
+        Topic.remove({
+            name: req.params.topic_name
+        }, function (err, topic) {
             if (err)
                 res.send(err);
 
-            getTodos(res);
+            getTopics(res);
         });
     });
 

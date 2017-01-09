@@ -4,6 +4,7 @@ angular.module('WhatPeopleSay', [
     'infinite-scroll',
     'angularInlineEdit',
     'WhatPeopleSay.TopicControllers', 
+    'WhatPeopleSay.TopicControllers_1', 
     'WhatPeopleSay.TrendsControllers', 
     'WhatPeopleSay.ChartControllers', 
     'WhatPeopleSay.LocalizedControllers', 

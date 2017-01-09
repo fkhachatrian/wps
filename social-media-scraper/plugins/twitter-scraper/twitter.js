@@ -37,8 +37,8 @@ module.exports = function (database) {
                 return;
             }
 
-            var deadQueue = mongoDbQueue(db, 'dead-queue')
-            queue = mongoDbQueue(db, 'my-queue', { deadQueue : deadQueue });
+            var deadQueue = mongoDbQueue(db, 'deadQueue')
+            queue = mongoDbQueue(db, 'msgQueue', { deadQueue : deadQueue });
 
             Topic.find({last_scraped: null},function (err, topics) {
 
@@ -53,6 +53,33 @@ module.exports = function (database) {
 
                       limiterTweets.schedule(scrapeTopic, {topic: topics[i], location: locations[j]});
                     }
+                }
+
+            });
+        });
+    };
+    
+    module.scrapeTopicAllLocations = function(topicName) {
+        mongodb.MongoClient.connect(database.localUrl2, function(err, db) {
+            if(err) {
+                console.log(err);
+                return;
+            }
+
+            var deadQueue = mongoDbQueue(db, 'deadQueue')
+            queue = mongoDbQueue(db, 'msgQueue', { deadQueue : deadQueue });
+
+            Topic.findOne({name: topicName, last_scraped: null},function (err, topic) {
+
+                if (err) {
+                    console.log(err);
+
+                    return;
+                }
+
+
+                for(var j = 0; j < locations.length; j ++) {
+                  limiterTweets.schedule(scrapeTopic, {topic: topic, location: locations[j]});
                 }
 
             });

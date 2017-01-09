@@ -60,7 +60,7 @@ var mongoDbQueue = require('mongodb-queue');
 
 function loadq() {
     mongodb.MongoClient.connect(database.localUrl2, function(err, db) {
-        var queue = mongoDbQueue(db, 'my-queue');
+        var queue = mongoDbQueue(db, 'msgQueue');
         
         Tweet.find({ 
             
@@ -116,8 +116,8 @@ function prc() {
                 reject(err);
             }
 
-            var deadQueue = mongoDbQueue(db, 'dead-queue')
-            var queue = mongoDbQueue(db, 'my-queue', { deadQueue : deadQueue });
+            var deadQueue = mongoDbQueue(db, 'deadQueue')
+            var queue = mongoDbQueue(db, 'msgQueue', { deadQueue : deadQueue });
 
             queue.total(function(err, count) {
                 console.log('This queue has seen %d messages', count);
@@ -247,36 +247,19 @@ function prc() {
 
 //prc();
 
-function sleep (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
-
-
-
-//function proc2() {
-//    console.log('called proc');
-//    return new Promise(function(resolve, reject){
-//        
-//        // Usage!
-//        sleep(25000).then(() => {
-//            console.log('OK');
-//            resolve('OK');
-//        });
-//    });
-//}
 
 // only one process is running. all new processes are discarded if there is one running
 var limiterAnalysis = new Bottleneck(1, 0, 0, Bottleneck.strategy.OVERFLOW);
 
-//new CronJob({
-//    cronTime:'0 */1 * * * *',
-//    runOnInit: false,
-//    start: true,
-//    onTick: function() {
-//        console.log('Try to start analysis if not already running every 1 minute...');
-//        limiterAnalysis.schedule(prc);
-//    }
-//});
+new CronJob({
+    cronTime:'0 */1 * * * *',
+    runOnInit: false,
+    start: true,
+    onTick: function() {
+        console.log('Try to start analysis if not already running every 1 minute...');
+        limiterAnalysis.schedule(prc);
+    }
+});
 
 
 var isoLangs = {
@@ -320,7 +303,7 @@ function detectLanguage(text, suggestedLanguages) {
 
 
 
-var str = "Читеров в Pokemon GO действительно ждёт перманентный бан https://t.co/CKk37X3dqy";
+//var str = "Читеров в Pokemon GO действительно ждёт перманентный бан https://t.co/CKk37X3dqy";
 //var str = "Мне понравилось видео 'СОКОЛОВСКИЙ НА ТВ — АРЕСТ ЗА POKEMON GO' (https://t.co/FePKoBenns)";
 //var str = "Продажи приставок Nintendo выросли на 80% благодаря успеху Pokemon Go: https://t.co/4fiVqgRsAg";
 
@@ -351,35 +334,35 @@ var str = "Читеров в Pokemon GO действительно ждёт пе
 
 //var str = 'One #Ukrainian serviceman killed in #Donbas over past 24 hours https://t.co/5y0aGcuK3t https://t.co/Xfcqg9yFPs';
 
-var str= 'Порошенко та Меркель обговорили імплементацію мінських домовленостей https://t.co/hmUj1XVj5u #Львів #Lviv #Новини #Порошенко #Меркель';
-
-var str= 'RT @A-Trigub: Выводы по аудиту сайта Школа Йоги - amritnam.ru #АлександрТригуб #МудрыйБизнес #ИнтернетПродажи #УвеличениеПродаж... https://…';
-
-var lang = detectLanguage(str);
-
-console.log(lang[0]);
-
-str = str.replace(/(https?:\/\/[^\s]+)/g, "");
-
-str = str.replace(/['!"#$%&\\'()\*+,\.\/:;<=>?@\[\\\]\^`{|}~']/g, "");
-
-str = str.replace(/['\-\_]/g, " ");
-
-str = str.replace(/[0-9]/g, '');
-
-str = str.replace(/\n/g, " ");
-
-str = str.replace(/(\b(\w{1,2})\b(\s|$))/g,'');
-
-str = XRegExp.replace(str, shortWordsUnicode, ""); // L: Letter
-
-str = str.replace(/\s+/g, " ").toLowerCase();
-
-var tokens = sw.removeStopwords(str.split(" "), sw[lang[0]]);
-var tokens = unique(tokens);
-
-console.log(tokens);
-
-sentiscan(tokens, lang[0], function (err, result) {
-    console.log(result);
-});
+//var str= 'Порошенко та Меркель обговорили імплементацію мінських домовленостей https://t.co/hmUj1XVj5u #Львів #Lviv #Новини #Порошенко #Меркель';
+//
+//var str= 'RT @A-Trigub: Выводы по аудиту сайта Школа Йоги - amritnam.ru #АлександрТригуб #МудрыйБизнес #ИнтернетПродажи #УвеличениеПродаж... https://…';
+//
+//var lang = detectLanguage(str);
+//
+//console.log(lang[0]);
+//
+//str = str.replace(/(https?:\/\/[^\s]+)/g, "");
+//
+//str = str.replace(/['!"#$%&\\'()\*+,\.\/:;<=>?@\[\\\]\^`{|}~']/g, "");
+//
+//str = str.replace(/['\-\_]/g, " ");
+//
+//str = str.replace(/[0-9]/g, '');
+//
+//str = str.replace(/\n/g, " ");
+//
+//str = str.replace(/(\b(\w{1,2})\b(\s|$))/g,'');
+//
+//str = XRegExp.replace(str, shortWordsUnicode, ""); // L: Letter
+//
+//str = str.replace(/\s+/g, " ").toLowerCase();
+//
+//var tokens = sw.removeStopwords(str.split(" "), sw[lang[0]]);
+//var tokens = unique(tokens);
+//
+//console.log(tokens);
+//
+//sentiscan(tokens, lang[0], function (err, result) {
+//    console.log(result);
+//});

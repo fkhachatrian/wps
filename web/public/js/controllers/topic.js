@@ -1,7 +1,8 @@
 angular.module('WhatPeopleSay.TopicControllers', [])
 
 	// inject the Topic service factory into our controller
-	.controller('topicController', ['$scope', '$rootScope', '$http','Topics', function($scope, $rootScope, $http, Topics) {
+	.controller('topicController', ['$scope', '$rootScope', '$interval', '$http','Topics', 
+            function($scope, $rootScope, $interval, $http, Topics) {
 		$scope.formData = {};
 		$scope.loading = true;
                 $scope.topicName = null;
@@ -11,9 +12,14 @@ angular.module('WhatPeopleSay.TopicControllers', [])
 		// use the service to get all the topics
 		Topics.get()
                     .success(function(data) {
-                            $scope.topics = data;
+                            if(!data.length) {
+                                return;
+                            }
+                        
+                            $rootScope.topics = data;
                             $scope.loading = false;
-                            $scope.activeTopicName = data[0].name;
+                            $rootScope.activeTopicName = data[0].name;
+                            
                     });
 
 
@@ -33,28 +39,42 @@ angular.module('WhatPeopleSay.TopicControllers', [])
                                 })
                                 // if successful creation, call our get function to get all the new todos
                                 .success(function(data) {
-                                        $scope.topics = data;
+                                        $rootScope.topics = data;
                                         $scope.loading = false;
                                         $scope.topicName = null; // clear the form so our user is ready to enter another
+                                        
+                                        $scope.loadLocalized(topic_name);
                                 });
+                                
+                                
 			}
 		};
-
-		// DELETE ==================================================================
-		// delete a todo after checking it
-		$scope.deleteTodo = function(id) {
-			$scope.loading = true;
-
-			Todos.delete(id)
-				// if successful creation, call our get function to get all the new todos
-				.success(function(data) {
-					$scope.loading = false;
-					$scope.todos = data; // assign our new list of todos
-				});
-		};
                 
+                $scope.removeTopic = function(topic_name) {
+
+                    $scope.loading = true;
+
+                    // call the create function from our service (returns a promise object)
+                    Topics.delete(encodeURIComponent(topic_name))
+                    // if successful creation, call our get function to get all the new todos
+                    .success(function(data) {
+                            $rootScope.topics = data;
+                            $scope.loading = false;
+                            
+                            $scope.loadLocalized(data[0].name);
+
+                    });
+
+		};
+
+
                 $scope.loadLocalized = function(topic_name) {
-                    $scope.activeTopicName = topic_name;
+                    $rootScope.activeTopicName = topic_name;
                     $rootScope.$emit('someEvent', [topic_name]);
                 };
+                
+                $rootScope.$on('createTopic', function(event, args) {
+                    $scope.createTopic(args);
+                });
+                
 	}]);
