@@ -74,7 +74,7 @@ angular.module('WhatPeopleSay.TopicControllers', [])
                 };
                 
                 $rootScope.$on('createTopic', function(event, args) {
-                    $scope.createTopic(args);
+                    $scope.createTopic(args[0]);
                 });
                 
 	}]);

@@ -254,7 +254,7 @@ module.exports = function (app) {
 
         var color = RandomColor({count: 1});
         
-        var topicName = req.body.name[0];
+        var topicName = req.body.name;
 
         Topic.create({
             name: topicName,
